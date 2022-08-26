@@ -1,7 +1,10 @@
 import express from "express";
 const route = express.Router();
-import { signup } from "../controller/user.js";
 import { body } from "express-validator";
+import { loginOrNot } from "../AuthUser/authUser.js";
+import { signup, login } from "../controller/user.js";
+
+//                      http://localhost:5000/api/
 
 route.post(
   "/",
@@ -12,5 +15,8 @@ route.post(
   ],
   signup
 );
+
+//                      http://localhost:5000/api/login/
+route.post("/login", login);
 
 export default route;

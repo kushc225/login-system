@@ -3,7 +3,7 @@ const userSchema = mongoose.Schema;
 const Person = userSchema({
   name: { type: String, rquired: true },
   email: { type: String, required: true, unique: true },
-  phoneNO: { type: Number },
+  phoneNo: { type: Number, default: null, required: false },
   password: { type: String, required: true },
   isAdmin: { type: Boolean, default: false },
   createAt: { type: Date, default: Date.now },
