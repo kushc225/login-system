@@ -1,4 +1,4 @@
-import UserModal from "../Models/user.js";
+import UserModel from "../Models/user.js";
 import { validationResult } from "express-validator";
 import bcryptjs from "bcryptjs";
 import Jwt from "jsonwebtoken";
@@ -15,15 +15,15 @@ export const signup = async (req, res) => {
     const { email, name, password, phoneNo } = req.body;
     const salt = await bcryptjs.genSalt(10);
     const secPass = await bcryptjs.hash(password, salt);
-    const emailExist = await UserModal.find({ email });
+    const emailExist = await UserModel.find({ email });
     if (emailExist.length == 0) {
       if (phoneNo === undefined) {
-        const data = await UserModal.create({ name, email, password: secPass });
+        const data = await UserModel.create({ name, email, password: secPass });
         return res.status(201).json({ success: true, data });
       } else {
-        const phoneNumberExist = await UserModal.find({ phoneNo });
+        const phoneNumberExist = await UserModel.find({ phoneNo });
         if (phoneNumberExist.length == 0) {
-          const data = await UserModal.create({
+          const data = await UserModel.create({
             name,
             email,
             phoneNo,
@@ -49,7 +49,7 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const emailExist = await UserModal.findOne({ email });
+    const emailExist = await UserModel.findOne({ email });
     if (emailExist != null) {
       const comPass = await bcryptjs.compare(password, emailExist.password);
       if (comPass) {
@@ -76,7 +76,7 @@ export const login = async (req, res) => {
 export const profile = async (req, res) => {
   const id = req.body.userId;
   try {
-    const userProfile = await UserModal.findById(id).select("-password");
+    const userProfile = await UserModel.findById(id).select("-password");
     if (userProfile) {
       return res.status(500).json({ success: false, userProfile });
     } else {
@@ -92,7 +92,7 @@ export const profile = async (req, res) => {
 export const profileUsingId = async (req, res) => {
   const id = req.params.id;
   try {
-    const userProfile = await UserModal.findById(id).select("-password");
+    const userProfile = await UserModel.findById(id).select("-password");
     if (userProfile) {
       return res.status(200).json({ success: true, userProfile });
     } else {
@@ -107,7 +107,7 @@ export const profileUsingId = async (req, res) => {
 
 export const allUserList = async (req, res) => {
   try {
-    const data = await UserModal.find().select("-password");
+    const data = await UserModel.find().select("-password");
     res.status(200).json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, msg: error.message });
@@ -117,7 +117,7 @@ export const allUserList = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     // you can't use callback and async await together
-    const result = await UserModal.findByIdAndUpdate(req.params.id, {
+    const result = await UserModel.findByIdAndUpdate(req.params.id, {
       $set: req.body,
     });
     return res.status(201).json({ success: true, result });

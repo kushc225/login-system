@@ -15,7 +15,7 @@ import {
   updateProfile,
 } from "../controller/user.js";
 
-// all the endpoints for normal user
+//                                                        all the endpoints for normal user
 
 //     <SIGNUP>                 http://localhost:5000/api/
 route.post(
@@ -39,6 +39,8 @@ route.get("/profile/:id", authAdminOrNot, profileUsingId);
 
 //                             http://localhost:5000/api/updateProfile/
 route.put("/updateProflie/:id", loginOrNot, updateProfile);
+
+//                                                        all the endpoints for Admin
 
 //         <ALLUSERLIST BY SUPER ADMIN>             http://localhost:5000/api/getAllUsers
 route.get("/getAllUsers", authSuperAdminOrNot, allUserList);
