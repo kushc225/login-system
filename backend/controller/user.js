@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import bcryptjs from "bcryptjs";
 import Jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
 dotenv.config();
 export const signup = async (req, res) => {
   const errors = validationResult(req);
@@ -55,6 +56,7 @@ export const login = async (req, res) => {
         const payload = {
           userId: emailExist._id,
           isAdmin: emailExist.isAdmin,
+          isSuperAdmin: emailExist.isSuperAdmin,
         };
         const token = await Jwt.sign(payload, process.env.JWT_SEC_KEY);
         return res.status(200).json({ success: true, token });
@@ -71,4 +73,64 @@ export const login = async (req, res) => {
   }
 };
 
-export default { signup, login };
+export const profile = async (req, res) => {
+  const id = req.body.userId;
+  try {
+    const userProfile = await UserModal.findById(id).select("-password");
+    if (userProfile) {
+      return res.status(500).json({ success: false, userProfile });
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, error: "Access denied..." });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const profileUsingId = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const userProfile = await UserModal.findById(id).select("-password");
+    if (userProfile) {
+      return res.status(200).json({ success: true, userProfile });
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, error: "Access denied..." });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const allUserList = async (req, res) => {
+  try {
+    const data = await UserModal.find().select("-password");
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    // you can't use callback and async await together
+    const result = await UserModal.findByIdAndUpdate(req.params.id, {
+      $set: req.body,
+    });
+    return res.status(201).json({ success: true, result });
+  } catch (error) {
+    res.status(500).json({ success: false, msg: error.message });
+  }
+};
+
+export default {
+  signup,
+  login,
+  profile,
+  profileUsingId,
+  allUserList,
+  updateProfile,
+};
