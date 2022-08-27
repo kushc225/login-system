@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 const video = mongoose.Schema;
 const VideoSchema = video({
+  owner: { type: String, required: true },
   title: { type: String, rquired: true },
   des: { type: String, required: true },
   visibility: { type: String, required: true },
